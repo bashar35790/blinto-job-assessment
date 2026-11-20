@@ -1,0 +1,22 @@
+services:
+  postgres-dev:
+    image: postgres:16-alpine
+    container_name: doomsday-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: doomsday_user
+      POSTGRES_PASSWORD: doomsday_password
+      POSTGRES_DB: doomsday_dev
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./docker/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doomsday_user -d doomsday_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_dev_data:
