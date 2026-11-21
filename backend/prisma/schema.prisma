@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Movie {
+  id             Int      @id @default(autoincrement())
+  title          String   @db.VarChar(255)
+  releaseYear    Int      @map("release_year")
+  runtimeMinutes Int      @map("runtime_minutes")
+  watched        Boolean  @default(false)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  prerequisites MoviePrerequisite[] @relation("MovieRequiresPrerequisites")
+  requiredBy    MoviePrerequisite[] @relation("MovieIsPrerequisiteFor")
+
+  @@map("movies")
+}
+
+model MoviePrerequisite {
+  movieId        Int @map("movie_id")
+  prerequisiteId Int @map("prerequisite_id")
+
+  movie        Movie @relation("MovieRequiresPrerequisites", fields: [movieId], references: [id], onDelete: Cascade)
+  prerequisite Movie @relation("MovieIsPrerequisiteFor", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+
+  @@id([movieId, prerequisiteId])
+  @@index([prerequisiteId])
+  @@map("movie_prerequisites")
+}
+
+model Cinema {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  bundles CinemaBundle[]
+
+  @@map("cinemas")
+}
+
+model CinemaBundle {
+  id       Int @id @default(autoincrement())
+  cinemaId Int @map("cinema_id")
+  size     Int
+
+  cinema Cinema @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+
+  @@unique([cinemaId, size])
+  @@map("cinema_bundles")
+}
