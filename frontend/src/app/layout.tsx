@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: 'Doomsday Ready | MCU Watch-Party Platform',
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="bg-mcu-dark text-slate-100 antialiased min-h-screen">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
