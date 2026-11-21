@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     environment:
       PORT: 3001
-      DATABASE_URL: postgresql://doomsday_user:doomsday_password@postgres:5432/doomsday_dev?schema=public
+      DATABASE_URL: ${DATABASE_URL:-postgresql://doomsday_user:doomsday_password@postgres:5432/doomsday_dev?schema=public}
     ports:
       - "3001:3001"
     networks:
