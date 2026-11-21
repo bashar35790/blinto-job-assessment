@@ -146,7 +146,7 @@ export default function MoviesPage() {
 
           <button
             onClick={handleOpenAddModal}
-            className="inline-flex items-center justify-center space-x-2 rounded-xl bg-stark-cyan px-4 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-stark-cyan/20 hover:bg-stark-dark transition-all duration-200"
+            className="inline-flex items-center justify-center space-x-2 rounded-xl bg-stark-cyan px-4 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-stark-cyan/20 hover:bg-stark-dark transition-all duration-200 w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             <span>Add Movie</span>
@@ -266,113 +266,210 @@ export default function MoviesPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-800 bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-                    <th className="py-3.5 pl-4 pr-3 sm:pl-6 w-12 text-center">Watched</th>
-                    <th className="py-3.5 px-3">Title &amp; Year</th>
-                    <th className="py-3.5 px-3">Runtime</th>
-                    <th className="py-3.5 px-3">Prerequisites Graph</th>
-                    <th className="py-3.5 pr-4 pl-3 sm:pr-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/80 text-sm">
-                  {filteredMovies.map((movie) => (
-                    <tr
-                      key={movie.id}
-                      className="hover:bg-slate-800/30 transition-colors group"
-                    >
-                      {/* Watched Toggle (Optimistic) */}
-                      <td className="py-4 pl-4 pr-3 sm:pl-6 text-center">
-                        <button
-                          type="button"
-                          onClick={() => handleToggleWatched(movie)}
-                          aria-label={`Mark ${movie.title} as ${
-                            movie.watched ? 'unwatched' : 'watched'
-                          }`}
-                          className="inline-flex items-center justify-center rounded-lg p-1 text-slate-400 hover:text-stark-cyan transition-colors"
-                        >
-                          {movie.watched ? (
-                            <CheckCircle2 className="h-5 w-5 text-stark-cyan fill-stark-cyan/20" />
-                          ) : (
-                            <Circle className="h-5 w-5 text-slate-600 hover:text-slate-400" />
-                          )}
-                        </button>
-                      </td>
+            <>
+              {/* Mobile Card List (< md screens) */}
+              <div className="md:hidden divide-y divide-slate-800/80">
+                {filteredMovies.map((movie) => (
+                  <div key={movie.id} className="p-4 space-y-3">
+                    {/* Header: Checkbox + Title + Year + Runtime */}
+                    <div className="flex items-start justify-between gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleWatched(movie)}
+                        aria-label={`Mark ${movie.title} as ${
+                          movie.watched ? 'unwatched' : 'watched'
+                        }`}
+                        className="pt-0.5 text-slate-400 hover:text-stark-cyan transition-colors flex-shrink-0 touch-manipulation"
+                      >
+                        {movie.watched ? (
+                          <CheckCircle2 className="h-6 w-6 text-stark-cyan fill-stark-cyan/20" />
+                        ) : (
+                          <Circle className="h-6 w-6 text-slate-600 hover:text-slate-400" />
+                        )}
+                      </button>
 
-                      {/* Title & Year */}
-                      <td className="py-4 px-3">
-                        <div className="flex items-center space-x-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-1.5 flex-wrap">
                           <span
-                            className={`font-semibold ${
-                              movie.watched ? 'text-slate-200 line-through decoration-slate-500' : 'text-white'
+                            className={`font-bold text-sm sm:text-base leading-snug break-words ${
+                              movie.watched
+                                ? 'text-slate-400 line-through decoration-slate-500'
+                                : 'text-white'
                             }`}
                           >
                             {movie.title}
                           </span>
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-slate-400 flex-shrink-0">
                             ({movie.releaseYear})
                           </span>
                         </div>
-                      </td>
+                      </div>
 
-                      {/* Runtime Badge */}
-                      <td className="py-4 px-3">
-                        <span className="inline-flex items-center space-x-1 rounded-md bg-slate-900 border border-slate-700/80 px-2 py-0.5 text-xs text-slate-300 font-mono">
-                          <Clock className="h-3 w-3 text-slate-400" />
-                          <span>{movie.runtimeMinutes}m</span>
-                        </span>
-                      </td>
+                      <span className="inline-flex items-center space-x-1 rounded-md bg-slate-900 border border-slate-700/80 px-2 py-0.5 text-xs text-slate-300 font-mono flex-shrink-0">
+                        <Clock className="h-3 w-3 text-slate-400" />
+                        <span>{movie.runtimeMinutes}m</span>
+                      </span>
+                    </div>
 
-                      {/* Prerequisites Graph Badges */}
-                      <td className="py-4 px-3">
-                        <div className="flex flex-wrap gap-1.5 max-w-md">
-                          {movie.prerequisites && movie.prerequisites.length > 0 ? (
-                            movie.prerequisites.map((prereq) => (
-                              <span
-                                key={prereq.id}
-                                className={`inline-flex items-center space-x-1 rounded-md px-2 py-0.5 text-xs font-medium border ${
-                                  prereq.watched
-                                    ? 'bg-slate-900/90 text-slate-400 border-slate-700 line-through'
-                                    : 'bg-marvel-red/10 text-red-300 border-marvel-red/30'
-                                }`}
-                              >
-                                <span>{prereq.title}</span>
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-xs text-slate-400 italic">
-                              Direct watch (No prerequisites)
+                    {/* Prerequisites */}
+                    <div className="pl-8">
+                      <div className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1">
+                        Prerequisites:
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {movie.prerequisites && movie.prerequisites.length > 0 ? (
+                          movie.prerequisites.map((prereq) => (
+                            <span
+                              key={prereq.id}
+                              className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium border ${
+                                prereq.watched
+                                  ? 'bg-slate-900/90 text-slate-500 border-slate-800 line-through'
+                                  : 'bg-marvel-red/10 text-red-300 border-marvel-red/30'
+                              }`}
+                            >
+                              {prereq.title}
                             </span>
-                          )}
-                        </div>
-                      </td>
+                          ))
+                        ) : (
+                          <span className="text-xs text-slate-500 italic">
+                            Direct watch (No prerequisites)
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-                      {/* Actions */}
-                      <td className="py-4 pr-4 pl-3 sm:pr-6 text-right space-x-2 whitespace-nowrap">
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEditModal(movie)}
-                          className="inline-flex items-center space-x-1 rounded-lg border border-slate-700 bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-slate-300 hover:border-stark-cyan hover:text-stark-cyan transition-colors"
-                        >
-                          <Edit2 className="h-3.5 w-3.5" />
-                          <span>Edit</span>
-                        </button>
+                    {/* Actions */}
+                    <div className="flex items-center space-x-2 pt-1 pl-8">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditModal(movie)}
+                        className="flex-1 inline-flex items-center justify-center space-x-1 rounded-lg border border-slate-700 bg-slate-900/80 py-2 text-xs font-medium text-slate-300 hover:border-stark-cyan hover:text-stark-cyan transition-colors"
+                      >
+                        <Edit2 className="h-3.5 w-3.5" />
+                        <span>Edit</span>
+                      </button>
 
-                        <Link
-                          href={`/rewatch?target=${movie.id}`}
-                          className="inline-flex items-center space-x-1 rounded-lg border border-stark-cyan/30 bg-stark-cyan/10 px-2.5 py-1 text-xs font-semibold text-stark-cyan hover:bg-stark-cyan hover:text-slate-950 transition-colors"
-                        >
-                          <span>Rewatch Plan</span>
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </Link>
-                      </td>
+                      <Link
+                        href={`/rewatch?target=${movie.id}`}
+                        className="flex-1 inline-flex items-center justify-center space-x-1 rounded-lg border border-stark-cyan/30 bg-stark-cyan/10 py-2 text-xs font-semibold text-stark-cyan hover:bg-stark-cyan hover:text-slate-950 transition-colors"
+                      >
+                        <span>Rewatch Plan</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table (>= md screens) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-800 bg-slate-900/60 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+                      <th className="py-3.5 pl-4 pr-3 sm:pl-6 w-12 text-center">Watched</th>
+                      <th className="py-3.5 px-3">Title &amp; Year</th>
+                      <th className="py-3.5 px-3">Runtime</th>
+                      <th className="py-3.5 px-3">Prerequisites Graph</th>
+                      <th className="py-3.5 pr-4 pl-3 sm:pr-6 text-right">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/80 text-sm">
+                    {filteredMovies.map((movie) => (
+                      <tr
+                        key={movie.id}
+                        className="hover:bg-slate-800/30 transition-colors group"
+                      >
+                        {/* Watched Toggle (Optimistic) */}
+                        <td className="py-4 pl-4 pr-3 sm:pl-6 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleWatched(movie)}
+                            aria-label={`Mark ${movie.title} as ${
+                              movie.watched ? 'unwatched' : 'watched'
+                            }`}
+                            className="inline-flex items-center justify-center rounded-lg p-1 text-slate-400 hover:text-stark-cyan transition-colors"
+                          >
+                            {movie.watched ? (
+                              <CheckCircle2 className="h-5 w-5 text-stark-cyan fill-stark-cyan/20" />
+                            ) : (
+                              <Circle className="h-5 w-5 text-slate-600 hover:text-slate-400" />
+                            )}
+                          </button>
+                        </td>
+
+                        {/* Title & Year */}
+                        <td className="py-4 px-3">
+                          <div className="flex items-center space-x-2">
+                            <span
+                              className={`font-semibold ${
+                                movie.watched ? 'text-slate-200 line-through decoration-slate-500' : 'text-white'
+                              }`}
+                            >
+                              {movie.title}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              ({movie.releaseYear})
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Runtime Badge */}
+                        <td className="py-4 px-3">
+                          <span className="inline-flex items-center space-x-1 rounded-md bg-slate-900 border border-slate-700/80 px-2 py-0.5 text-xs text-slate-300 font-mono">
+                            <Clock className="h-3 w-3 text-slate-400" />
+                            <span>{movie.runtimeMinutes}m</span>
+                          </span>
+                        </td>
+
+                        {/* Prerequisites Graph Badges */}
+                        <td className="py-4 px-3">
+                          <div className="flex flex-wrap gap-1.5 max-w-md">
+                            {movie.prerequisites && movie.prerequisites.length > 0 ? (
+                              movie.prerequisites.map((prereq) => (
+                                <span
+                                  key={prereq.id}
+                                  className={`inline-flex items-center space-x-1 rounded-md px-2 py-0.5 text-xs font-medium border ${
+                                    prereq.watched
+                                      ? 'bg-slate-900/90 text-slate-400 border-slate-700 line-through'
+                                      : 'bg-marvel-red/10 text-red-300 border-marvel-red/30'
+                                  }`}
+                                >
+                                  <span>{prereq.title}</span>
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-xs text-slate-400 italic">
+                                Direct watch (No prerequisites)
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-4 pr-4 pl-3 sm:pr-6 text-right space-x-2 whitespace-nowrap">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditModal(movie)}
+                            className="inline-flex items-center space-x-1 rounded-lg border border-slate-700 bg-slate-900/80 px-2.5 py-1 text-xs font-medium text-slate-300 hover:border-stark-cyan hover:text-stark-cyan transition-colors"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                            <span>Edit</span>
+                          </button>
+
+                          <Link
+                            href={`/rewatch?target=${movie.id}`}
+                            className="inline-flex items-center space-x-1 rounded-lg border border-stark-cyan/30 bg-stark-cyan/10 px-2.5 py-1 text-xs font-semibold text-stark-cyan hover:bg-stark-cyan hover:text-slate-950 transition-colors"
+                          >
+                            <span>Rewatch Plan</span>
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </main>

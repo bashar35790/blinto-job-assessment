@@ -269,7 +269,7 @@ function RewatchContent() {
                     return (
                       <div
                         key={item.id}
-                        className={`flex items-center justify-between rounded-xl border p-4 transition-all duration-200 ${
+                        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 rounded-xl border p-3.5 sm:p-4 transition-all duration-200 ${
                           item.watched
                             ? 'border-slate-800/80 bg-slate-900/40 text-slate-400'
                             : isNextUp
@@ -278,13 +278,13 @@ function RewatchContent() {
                         }`}
                       >
                         {/* Step and Checkbox */}
-                        <div className="flex items-center space-x-3.5 min-w-0 pr-4">
+                        <div className="flex items-center space-x-3 min-w-0 flex-1">
                           <button
                             type="button"
                             onClick={() => handleToggleWatched(item.id, item.watched)}
                             disabled={isTogglingThis}
                             aria-label={`Toggle ${item.title}`}
-                            className="flex-shrink-0 text-slate-400 hover:text-stark-cyan transition-colors disabled:opacity-50"
+                            className="flex-shrink-0 text-slate-400 hover:text-stark-cyan transition-colors disabled:opacity-50 touch-manipulation p-0.5"
                           >
                             {isTogglingThis ? (
                               <Loader2 className="h-5 w-5 animate-spin text-stark-cyan" />
@@ -308,10 +308,10 @@ function RewatchContent() {
                             Step {index + 1}
                           </span>
 
-                          {/* Title and Runtime */}
-                          <div className="min-w-0 truncate">
+                          {/* Title */}
+                          <div className="min-w-0 flex-1 truncate">
                             <span
-                              className={`text-sm font-semibold truncate ${
+                              className={`text-sm sm:text-base font-semibold truncate ${
                                 item.watched ? 'line-through text-slate-400' : 'text-white'
                               }`}
                             >
@@ -321,8 +321,8 @@ function RewatchContent() {
                         </div>
 
                         {/* Status Pills */}
-                        <div className="flex items-center space-x-2.5 flex-shrink-0">
-                          <span className="hidden sm:inline-flex items-center space-x-1 rounded-md bg-slate-900 border border-slate-800 px-2 py-0.5 text-xs text-slate-400 font-mono">
+                        <div className="flex items-center justify-between sm:justify-end space-x-2 pl-8 sm:pl-0 flex-shrink-0">
+                          <span className="inline-flex items-center space-x-1 rounded-md bg-slate-900 border border-slate-800 px-2 py-0.5 text-xs text-slate-400 font-mono">
                             <Clock className="h-3 w-3" />
                             <span>{item.runtimeMinutes}m</span>
                           </span>

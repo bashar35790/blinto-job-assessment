@@ -37,7 +37,7 @@ export function ProgressBar({
           <CheckCircle2 className="h-5 w-5 text-stark-cyan" />
           <h3 className="font-semibold text-white text-base">{label}</h3>
         </div>
-        <div className="flex items-center space-x-4 text-sm">
+        <div className="flex items-center justify-between sm:justify-start space-x-3 text-xs sm:text-sm">
           <span className="font-medium text-slate-300">
             <strong className="text-stark-cyan font-bold">{watchedCount}</strong> of{' '}
             <strong className="text-white font-bold">{totalCount}</strong> watched

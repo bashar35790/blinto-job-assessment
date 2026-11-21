@@ -114,11 +114,11 @@ export function MovieModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg rounded-2xl border border-slate-800 bg-mcu-card p-6 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-lg rounded-2xl border border-slate-800 bg-mcu-card p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

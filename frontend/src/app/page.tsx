@@ -42,29 +42,29 @@ export default function HomePage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900/90 via-mcu-card to-mcu-dark p-8 sm:p-12 shadow-2xl text-center">
-          <div className="inline-flex items-center space-x-2 rounded-full bg-marvel-red/20 px-3.5 py-1 text-xs font-black uppercase tracking-widest text-marvel-red border border-marvel-red/40 mb-6">
-            <Shield className="h-3.5 w-3.5" />
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900/90 via-mcu-card to-mcu-dark p-6 sm:p-12 shadow-2xl text-center">
+          <div className="inline-flex items-center space-x-2 rounded-full bg-marvel-red/20 px-3 py-1 text-[11px] sm:text-xs font-black uppercase tracking-widest text-marvel-red border border-marvel-red/40 mb-4 sm:mb-6">
+            <Shield className="h-3.5 w-3.5 flex-shrink-0" />
             <span>MCU Phase 6 Platform</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight break-words">
             BE PREPARED FOR <br />
             <span className="text-marvel-red">AVENGERS:</span>{' '}
             <span className="text-stark-cyan">DOOMSDAY</span>
           </h1>
 
-          <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
             The ultimate full-stack platform for Marvel fans. Compute pure
             topological prerequisite chains, track your rewatch progress, and
             optimize watch-party cinema bundles using dynamic programming.
           </p>
 
           {/* Quick CTA Buttons */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto">
             <Link
               href="/rewatch"
-              className="inline-flex items-center space-x-2 rounded-xl bg-stark-cyan px-6 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-stark-cyan/20 hover:bg-stark-dark transition-all duration-200"
+              className="inline-flex items-center justify-center space-x-2 rounded-xl bg-stark-cyan px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-stark-cyan/20 hover:bg-stark-dark transition-all duration-200 w-full sm:w-auto"
             >
               <CheckSquare className="h-4 w-4" />
               <span>Start Rewatch Plan</span>
@@ -73,7 +73,7 @@ export default function HomePage() {
 
             <Link
               href="/booking"
-              className="inline-flex items-center space-x-2 rounded-xl border border-slate-700 bg-slate-800/80 px-6 py-3 text-sm font-bold text-slate-200 hover:border-stark-cyan hover:text-white transition-all duration-200"
+              className="inline-flex items-center justify-center space-x-2 rounded-xl border border-slate-700 bg-slate-800/80 px-5 py-3 text-sm font-bold text-slate-200 hover:border-stark-cyan hover:text-white transition-all duration-200 w-full sm:w-auto"
             >
               <Ticket className="h-4 w-4 text-stark-cyan" />
               <span>Optimize Cinema Bundle</span>
@@ -81,7 +81,7 @@ export default function HomePage() {
 
             <Link
               href="/movies"
-              className="inline-flex items-center space-x-2 rounded-xl border border-slate-700 bg-slate-800/40 px-5 py-3 text-sm font-semibold text-slate-400 hover:text-white transition-all duration-200"
+              className="inline-flex items-center justify-center space-x-2 rounded-xl border border-slate-700 bg-slate-800/40 px-5 py-3 text-sm font-semibold text-slate-400 hover:text-white transition-all duration-200 w-full sm:w-auto"
             >
               <Film className="h-4 w-4" />
               <span>Manage Catalog</span>
@@ -90,30 +90,30 @@ export default function HomePage() {
         </div>
 
         {/* Live Metrics Overview */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="rounded-2xl border border-slate-800 bg-mcu-card p-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="rounded-2xl border border-slate-800 bg-mcu-card p-4 sm:p-5">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
-              <span>Seeded Movies</span>
-              <Film className="h-4 w-4 text-stark-cyan" />
+              <span className="truncate">Seeded Movies</span>
+              <Film className="h-4 w-4 text-stark-cyan flex-shrink-0" />
             </div>
-            <div className="mt-2 text-3xl font-black text-white">
+            <div className="mt-2 text-2xl sm:text-3xl font-black text-white">
               {movies.length || 8}
             </div>
-            <div className="mt-1 text-xs text-slate-400">Canonical MCU titles</div>
+            <div className="mt-1 text-[11px] sm:text-xs text-slate-400 truncate">Canonical MCU titles</div>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-mcu-card p-5">
+          <div className="rounded-2xl border border-slate-800 bg-mcu-card p-4 sm:p-5">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
-              <span>Watched Status</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <span className="truncate">Watched Status</span>
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 flex-shrink-0" />
             </div>
-            <div className="mt-2 text-3xl font-black text-stark-cyan">
+            <div className="mt-2 text-2xl sm:text-3xl font-black text-stark-cyan">
               {watchedCount}{' '}
-              <span className="text-base font-normal text-slate-400">
+              <span className="text-sm font-normal text-slate-400">
                 / {movies.length || 8}
               </span>
             </div>
-            <div className="mt-1 text-xs text-slate-400">
+            <div className="mt-1 text-[11px] sm:text-xs text-slate-400 truncate">
               {movies.length > 0
                 ? Math.round((watchedCount / movies.length) * 100)
                 : 0}
@@ -121,26 +121,26 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-mcu-card p-5">
+          <div className="rounded-2xl border border-slate-800 bg-mcu-card p-4 sm:p-5">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
-              <span>Cinema Venues</span>
-              <Ticket className="h-4 w-4 text-stark-cyan" />
+              <span className="truncate">Cinema Venues</span>
+              <Ticket className="h-4 w-4 text-stark-cyan flex-shrink-0" />
             </div>
-            <div className="mt-2 text-3xl font-black text-white">
+            <div className="mt-2 text-2xl sm:text-3xl font-black text-white">
               {cinemas.length || 4}
             </div>
-            <div className="mt-1 text-xs text-slate-400">With custom bundles</div>
+            <div className="mt-1 text-[11px] sm:text-xs text-slate-400 truncate">With custom bundles</div>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-mcu-card p-5">
+          <div className="rounded-2xl border border-slate-800 bg-mcu-card p-4 sm:p-5">
             <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
-              <span>Total Runtime</span>
-              <Clock className="h-4 w-4 text-marvel-red" />
+              <span className="truncate">Total Runtime</span>
+              <Clock className="h-4 w-4 text-marvel-red flex-shrink-0" />
             </div>
-            <div className="mt-2 text-3xl font-black text-white">
+            <div className="mt-2 text-2xl sm:text-3xl font-black text-white">
               {totalHours || 19}h+
             </div>
-            <div className="mt-1 text-xs text-slate-400">Across multiverse saga</div>
+            <div className="mt-1 text-[11px] sm:text-xs text-slate-400 truncate">Across multiverse saga</div>
           </div>
         </div>
 

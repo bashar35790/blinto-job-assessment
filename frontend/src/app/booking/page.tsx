@@ -128,7 +128,7 @@ export default function BookingPage() {
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center justify-center space-x-2 rounded-xl bg-stark-cyan px-4 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-stark-cyan/20 hover:bg-stark-dark transition-all duration-200"
+            className="inline-flex items-center justify-center space-x-2 rounded-xl bg-stark-cyan px-4 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-stark-cyan/20 hover:bg-stark-dark transition-all duration-200 w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             <span>Create Cinema</span>
@@ -292,14 +292,14 @@ export default function BookingPage() {
         {/* DP Quote Result Section */}
         {quote && (
           <div className="rounded-2xl border border-slate-800 bg-mcu-card p-6 shadow-xl animate-in fade-in duration-300">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="h-5 w-5 text-stark-cyan" />
-                <h3 className="text-lg font-bold text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-2">
+              <div className="flex items-center space-x-2 min-w-0">
+                <Sparkles className="h-5 w-5 text-stark-cyan flex-shrink-0" />
+                <h3 className="text-base sm:text-lg font-bold text-white truncate">
                   Optimization Result for {quote.cinema.name}
                 </h3>
               </div>
-              <span className="text-xs text-slate-400 font-medium">
+              <span className="text-xs text-slate-400 font-medium flex-shrink-0">
                 Target: <strong className="text-white font-bold">{quote.groupSize}</strong> guests
               </span>
             </div>
