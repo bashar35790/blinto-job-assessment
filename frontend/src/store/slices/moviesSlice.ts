@@ -37,11 +37,11 @@ const initialState: MoviesState = {
 
 export const fetchMovies = createAsyncThunk<
   Movie[],
-  void,
+  { force?: boolean } | void,
   { rejectValue: SerializedApiError }
->('movies/fetchMovies', async (_, { rejectWithValue }) => {
+>('movies/fetchMovies', async (args, { rejectWithValue }) => {
   try {
-    return await api.getMovies();
+    return await api.getMovies({ bypassCache: args?.force });
   } catch (error) {
     if (error instanceof ApiError) {
       return rejectWithValue({
@@ -174,6 +174,16 @@ export const moviesSlice = createSlice({
       }
       state.error = action.payload?.message || action.error.message || 'Failed to update movie';
       state.errorCode = action.payload?.code || 'UPDATE_ERROR';
+    });
+    // Listen to rewatch plan toggle to keep movie catalog synchronized without extra network round-trips
+    builder.addCase('rewatch/toggleWatchedFromPlan/fulfilled', (state, action: any) => {
+      const arg = action.meta?.arg;
+      if (arg?.movieId !== undefined) {
+        const movie = state.items.find((m) => m.id === arg.movieId);
+        if (movie) {
+          movie.watched = arg.watched;
+        }
+      }
     });
   },
 });

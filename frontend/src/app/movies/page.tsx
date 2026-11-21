@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useDeferredValue } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   Film,
   Plus,
@@ -29,7 +30,12 @@ import type {
 } from '@/api/client';
 import { Navbar } from '@/components/Navbar';
 import { ErrorAlert } from '@/components/ErrorAlert';
-import { MovieModal } from '@/components/MovieModal';
+
+// Code splitting: dynamically import the heavy modal only when requested by the user
+const MovieModal = dynamic(
+  () => import('@/components/MovieModal').then((mod) => mod.MovieModal),
+  { ssr: false, loading: () => null }
+);
 
 export default function MoviesPage() {
   const dispatch = useAppDispatch();
@@ -38,13 +44,17 @@ export default function MoviesPage() {
   );
 
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const [filterWatched, setFilterWatched] = useState<'all' | 'watched' | 'unwatched'>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMovieForEdit, setSelectedMovieForEdit] = useState<Movie | null>(null);
 
   useEffect(() => {
-    dispatch(fetchMovies());
-  }, [dispatch]);
+    // If movies are already in store, skip network trip; otherwise fetch
+    if (movies.length === 0) {
+      dispatch(fetchMovies());
+    }
+  }, [dispatch, movies.length]);
 
   const handleOpenAddModal = () => {
     setSelectedMovieForEdit(null);
@@ -92,12 +102,14 @@ export default function MoviesPage() {
     }
   };
 
-  // Filtered movies
+  // Filtered movies with deferred search to keep 60fps input responsiveness
   const filteredMovies = useMemo(() => {
+    const q = deferredSearchQuery.trim().toLowerCase();
     return movies.filter((movie) => {
       const matchesSearch =
-        movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        movie.releaseYear.toString().includes(searchQuery);
+        !q ||
+        movie.title.toLowerCase().includes(q) ||
+        movie.releaseYear.toString().includes(q);
 
       if (!matchesSearch) return false;
 
@@ -105,7 +117,7 @@ export default function MoviesPage() {
       if (filterWatched === 'unwatched') return !movie.watched;
       return true;
     });
-  }, [movies, searchQuery, filterWatched]);
+  }, [movies, deferredSearchQuery, filterWatched]);
 
   // Catalog stats
   const watchedCount = movies.filter((m) => m.watched).length;

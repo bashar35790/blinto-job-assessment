@@ -38,11 +38,11 @@ const initialState: BookingState = {
 
 export const fetchCinemas = createAsyncThunk<
   Cinema[],
-  void,
+  { force?: boolean } | void,
   { rejectValue: SerializedApiError }
->('booking/fetchCinemas', async (_, { rejectWithValue }) => {
+>('booking/fetchCinemas', async (args, { rejectWithValue }) => {
   try {
-    return await api.getCinemas();
+    return await api.getCinemas({ bypassCache: args?.force });
   } catch (error) {
     if (error instanceof ApiError) {
       return rejectWithValue({

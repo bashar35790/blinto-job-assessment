@@ -6,8 +6,15 @@ import { ErrorCode, errorHandler } from './utils/errors.js';
 
 export const app = express();
 
+app.disable('x-powered-by');
 app.use(cors());
 app.use(express.json());
+
+// Security & caching headers
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
 
 app.use('/api/movies', movieRoutes);
 app.use('/api/cinemas', cinemaRoutes);

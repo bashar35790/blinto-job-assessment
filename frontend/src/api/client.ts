@@ -82,78 +82,161 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(endpoint, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
+// In-memory cache & request deduplication for production performance
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+const DEFAULT_TTL_MS = 15_000; // 15 seconds freshness window
+const responseCache = new Map<string, CacheEntry<unknown>>();
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+export function invalidateCache(pattern?: string | RegExp): void {
+  if (!pattern) {
+    responseCache.clear();
+    return;
+  }
+  const keysToDelete: string[] = [];
+  responseCache.forEach((_, key) => {
+    if (typeof pattern === 'string' ? key.includes(pattern) : pattern.test(key)) {
+      keysToDelete.push(key);
+    }
   });
+  keysToDelete.forEach((key) => responseCache.delete(key));
+}
 
-  if (!response.ok) {
-    let errorCode = 'UNKNOWN_ERROR';
-    let errorMessage = `HTTP error ${response.status}`;
+interface RequestOptions extends RequestInit {
+  bypassCache?: boolean;
+  ttlMs?: number;
+}
 
-    try {
-      const data = (await response.json()) as ApiErrorResponse;
-      if (data.error) {
-        errorCode = data.error;
-      }
-      if (data.message) {
-        errorMessage = data.message;
-      }
-    } catch {
-      // Non-JSON response body fallback
+async function request<T>(endpoint: string, options?: RequestOptions): Promise<T> {
+  const isGet = !options?.method || options.method.toUpperCase() === 'GET';
+  const ttl = options?.ttlMs ?? DEFAULT_TTL_MS;
+
+  // 1. Check in-memory cache for GET requests
+  if (isGet && !options?.bypassCache) {
+    const cached = responseCache.get(endpoint) as CacheEntry<T> | undefined;
+    if (cached && Date.now() - cached.timestamp < ttl) {
+      return cached.data;
     }
 
-    throw new ApiError(response.status, errorCode, errorMessage);
+    // 2. In-flight request deduplication (prevent identical concurrent network queries)
+    const inFlight = pendingRequests.get(endpoint) as Promise<T> | undefined;
+    if (inFlight) {
+      return inFlight;
+    }
   }
 
-  if (response.status === 204) {
-    return {} as T;
+  const execute = async (): Promise<T> => {
+    try {
+      const response = await fetch(endpoint, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options?.headers,
+        },
+      });
+
+      if (!response.ok) {
+        let errorCode = 'UNKNOWN_ERROR';
+        let errorMessage = `HTTP error ${response.status}`;
+
+        try {
+          const data = (await response.json()) as ApiErrorResponse;
+          if (data.error) {
+            errorCode = data.error;
+          }
+          if (data.message) {
+            errorMessage = data.message;
+          }
+        } catch {
+          // Non-JSON response body fallback
+        }
+
+        throw new ApiError(response.status, errorCode, errorMessage);
+      }
+
+      if (response.status === 204) {
+        return {} as T;
+      }
+
+      const result = (await response.json()) as T;
+
+      // Cache successful GET responses
+      if (isGet && !options?.bypassCache) {
+        responseCache.set(endpoint, { data: result, timestamp: Date.now() });
+      }
+
+      return result;
+    } finally {
+      if (isGet) {
+        pendingRequests.delete(endpoint);
+      }
+    }
+  };
+
+  if (isGet && !options?.bypassCache) {
+    const promise = execute();
+    pendingRequests.set(endpoint, promise);
+    return promise;
   }
 
-  return response.json() as Promise<T>;
+  return execute();
 }
 
 export const api = {
+  // Cache invalidation utility
+  clearCache: invalidateCache,
+
   // Movie endpoints
-  getMovies(): Promise<Movie[]> {
-    return request<Movie[]>('/api/movies');
+  getMovies(options?: { bypassCache?: boolean }): Promise<Movie[]> {
+    return request<Movie[]>('/api/movies', { bypassCache: options?.bypassCache });
   },
 
-  createMovie(payload: CreateMoviePayload): Promise<Movie> {
-    return request<Movie>('/api/movies', {
+  async createMovie(payload: CreateMoviePayload): Promise<Movie> {
+    const result = await request<Movie>('/api/movies', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+    invalidateCache('/api/movies');
+    return result;
   },
 
-  updateMovie(id: number, payload: UpdateMoviePayload): Promise<Movie> {
-    return request<Movie>(`/api/movies/${id}`, {
+  async updateMovie(id: number, payload: UpdateMoviePayload): Promise<Movie> {
+    const result = await request<Movie>(`/api/movies/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(payload),
     });
+    invalidateCache('/api/movies');
+    return result;
   },
 
-  getRewatchOrder(id: number): Promise<RewatchPlan> {
-    return request<RewatchPlan>(`/api/movies/${id}/rewatch-order`);
-  },
-
-  // Cinema endpoints
-  getCinemas(): Promise<Cinema[]> {
-    return request<Cinema[]>('/api/cinemas');
-  },
-
-  createCinema(payload: CreateCinemaPayload): Promise<Cinema> {
-    return request<Cinema>('/api/cinemas', {
-      method: 'POST',
-      body: JSON.stringify(payload),
+  getRewatchOrder(id: number, options?: { bypassCache?: boolean }): Promise<RewatchPlan> {
+    return request<RewatchPlan>(`/api/movies/${id}/rewatch-order`, {
+      bypassCache: options?.bypassCache,
     });
   },
 
+  // Cinema endpoints
+  getCinemas(options?: { bypassCache?: boolean }): Promise<Cinema[]> {
+    return request<Cinema[]>('/api/cinemas', { bypassCache: options?.bypassCache });
+  },
+
+  async createCinema(payload: CreateCinemaPayload): Promise<Cinema> {
+    const result = await request<Cinema>('/api/cinemas', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    invalidateCache('/api/cinemas');
+    return result;
+  },
+
   getBookingQuote(cinemaId: number, groupSize: number): Promise<BookingQuote> {
-    return request<BookingQuote>(`/api/cinemas/${cinemaId}/booking?groupSize=${groupSize}`);
+    return request<BookingQuote>(
+      `/api/cinemas/${cinemaId}/booking?groupSize=${groupSize}`,
+      { ttlMs: 60_000 } // DP quote results are pure and idempotent; cache for 60s
+    );
   },
 };

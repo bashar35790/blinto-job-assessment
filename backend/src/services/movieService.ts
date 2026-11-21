@@ -233,8 +233,18 @@ export async function updateMovie(id: number, input: UpdateMovieInput) {
 export async function getRewatchOrder(id: number) {
   const [target, movies, links] = await Promise.all([
     prisma.movie.findUnique({ where: { id }, include: movieInclude }),
-    prisma.movie.findMany(),
-    prisma.moviePrerequisite.findMany(),
+    prisma.movie.findMany({
+      select: {
+        id: true,
+        title: true,
+        runtimeMinutes: true,
+        watched: true,
+        releaseYear: true,
+      },
+    }),
+    prisma.moviePrerequisite.findMany({
+      select: { movieId: true, prerequisiteId: true },
+    }),
   ]);
 
   if (!target) {

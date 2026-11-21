@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   Ticket,
   Plus,
@@ -28,7 +29,12 @@ import {
 import type { CreateCinemaPayload } from '@/api/client';
 import { Navbar } from '@/components/Navbar';
 import { ErrorAlert } from '@/components/ErrorAlert';
-import { CinemaModal } from '@/components/CinemaModal';
+
+// Code splitting: dynamically import modal only when user opens "+ Create Cinema"
+const CinemaModal = dynamic(
+  () => import('@/components/CinemaModal').then((mod) => mod.CinemaModal),
+  { ssr: false, loading: () => null }
+);
 
 const PRESET_GROUP_SIZES = [6, 11, 44, 100, 500, 1000];
 
@@ -53,8 +59,10 @@ export default function BookingPage() {
   const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
-    dispatch(fetchCinemas());
-  }, [dispatch]);
+    if (cinemas.length === 0) {
+      dispatch(fetchCinemas());
+    }
+  }, [dispatch, cinemas.length]);
 
   const selectedCinema = cinemas.find((c) => c.id === selectedCinemaId);
 

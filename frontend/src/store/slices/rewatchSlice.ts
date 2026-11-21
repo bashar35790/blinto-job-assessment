@@ -53,10 +53,10 @@ export const toggleWatchedFromPlan = createAsyncThunk<
   'rewatch/toggleWatchedFromPlan',
   async ({ movieId, watched, targetId }, { rejectWithValue }) => {
     try {
-      // Step 1: Update movie watched status
+      // Step 1: Update movie watched status (invalidates cached catalog)
       await api.updateMovie(movieId, { watched });
-      // Step 2: Refetch rewatch plan immediately to recalculate metrics & topological sequence
-      return await api.getRewatchOrder(targetId);
+      // Step 2: Refetch rewatch plan with bypassCache to recalculate metrics & topological sequence
+      return await api.getRewatchOrder(targetId, { bypassCache: true });
     } catch (error) {
       if (error instanceof ApiError) {
         return rejectWithValue({

@@ -32,7 +32,6 @@ export function hasCycle(
     testAdj.set(key, [...neighbors]);
   }
   testAdj.set(movieId, [...proposedPrereqs]);
-  testAdj.set(movieId, [...proposedPrereqs]);
   const colors = new Map<number, number>();
   function dfs(currentId: number): boolean {
     colors.set(currentId, 1);
@@ -88,11 +87,16 @@ export function computeRewatchOrder(
 
   dfs(targetMovieId);
 
-  // Compute rewatch metrics
-  const watchedCount = order.filter((m) => m.watched).length;
-  const remainingRuntimeMinutes = order
-    .filter((m) => !m.watched)
-    .reduce((total, m) => total + m.runtimeMinutes, 0);
+  // Compute rewatch metrics in a single O(V) pass
+  let watchedCount = 0;
+  let remainingRuntimeMinutes = 0;
+  for (const item of order) {
+    if (item.watched) {
+      watchedCount++;
+    } else {
+      remainingRuntimeMinutes += item.runtimeMinutes;
+    }
+  }
 
   return {
     order,
