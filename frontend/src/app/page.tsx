@@ -40,7 +40,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-mcu-dark text-slate-100 flex flex-col">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Hero Section */}
         <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900/90 via-mcu-card to-mcu-dark p-8 sm:p-12 shadow-2xl text-center">
           <div className="inline-flex items-center space-x-2 rounded-full bg-marvel-red/20 px-3.5 py-1 text-xs font-black uppercase tracking-widest text-marvel-red border border-marvel-red/40 mb-6">

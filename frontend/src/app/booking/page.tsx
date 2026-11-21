@@ -111,7 +111,7 @@ export default function BookingPage() {
     <div className="min-h-screen bg-mcu-dark text-slate-100 flex flex-col">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -167,7 +167,7 @@ export default function BookingPage() {
                 <span>Loading available cinemas...</span>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {cinemas.map((cinema) => {
                   const isSelected = cinema.id === selectedCinemaId;
                   return (
