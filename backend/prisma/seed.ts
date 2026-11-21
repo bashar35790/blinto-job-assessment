@@ -1,3 +1,4 @@
+import { pathToFileURL } from 'node:url';
 import { prisma } from '../src/db/prisma.js';
 
 interface SeedMovie {
@@ -156,17 +157,23 @@ async function seedCinemas() {
   }
 }
 
-async function main() {
+export async function seedDatabase(): Promise<void> {
   await seedMovies();
   await seedCinemas();
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (error) => {
-    console.error(error);
-    await prisma.$disconnect();
-    process.exitCode = 1;
-  });
+const isDirectExecution =
+  process.argv[1] !== undefined &&
+  import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectExecution) {
+  seedDatabase()
+    .then(async () => {
+      await prisma.$disconnect();
+    })
+    .catch(async (error) => {
+      console.error(error);
+      await prisma.$disconnect();
+      process.exitCode = 1;
+    });
+}
